@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Entrypoint.cpp" />
+    <ClCompile Include="Display.cpp" />
+    <ClCompile Include="ImGuiHelper.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="StringId.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TransformComponent.cpp" />
+    <ClCompile Include="Camera.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="Display.h" />
+    <ClInclude Include="ImGuiHelper.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="StringId.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="Time.h" />
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="Camera.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Standard.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Standard.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Debug.vert" />
+    <None Include="Shaders\Debug.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{fcbfdcc4-3a2a-4b09-a862-e7ecd4b8ca8d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
