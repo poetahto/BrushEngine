@@ -40,7 +40,7 @@ Texture::~Texture()
     glDeleteTextures(1, &m_handle);
 }
 
-void Texture::applyTo(int textureUnit)
+void Texture::bindTo(int textureUnit)
 {
     glActiveTexture(textureUnit);
     glBindTexture(GL_TEXTURE_2D, m_handle);

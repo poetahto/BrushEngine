@@ -18,6 +18,8 @@
 #include "Time.h"
 #include "TransformComponent.h"
 #include "Camera.h"
+#include "Mesh.h"
+#include "Primatives.h"
 
 using namespace glm;
 
@@ -55,78 +57,8 @@ static vec3 s_cubePositions[] {
 static vec3 s_inputDirection{};
 static vec3 s_velocity{};
 static vec3 s_targetVelocity{};
-static TransformComponent s_transform{};
 
-
-unsigned int loadMesh()
-{
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
-
-    unsigned int vbo;
-    glGenBuffers(1, &vbo);
-
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    return vao;
-}
-
-void renderCubes(unsigned int &vao, mat4 &vp, Shader &shader, Texture &texture)
+void renderCubes(Mesh &mesh, mat4 &vp, Shader &shader, Texture &texture)
 {
     mat4 model;
 
@@ -140,10 +72,8 @@ void renderCubes(unsigned int &vao, mat4 &vp, Shader &shader, Texture &texture)
 
         shader.use();
         shader.setMat4("transform", vp * model);
-        texture.applyTo(GL_TEXTURE0);
-
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        texture.bindTo(GL_TEXTURE0);
+        mesh.draw();
     }
 }
 
@@ -188,13 +118,8 @@ void renderImGuiTools()
         ImGui::DragFloat("Sensitivity", &s_mouseSensitivity);
     }
 
-    ImGui::DragFloat3("Transform Pos", &s_transform.position.x, 0.01f);
-    
     static vec3 euler;
     
-    if (ImGui::DragFloat3("Transform rotation", &euler.x, 0.1f))
-        s_transform.rotation = quat{ {radians(euler.x), radians(euler.y), radians(euler.z)} };
-
     ImGui::Checkbox("Show Demo Window", &s_showDemoWindow);
 
     if (s_showDemoWindow)
@@ -202,7 +127,7 @@ void renderImGuiTools()
 
     static float s_timeSinceGuiUpdate;
     static float s_deltaTime;
-    static float s_updateRate {0.1};
+    static float s_updateRate{ 0.1f };
 
     if (s_timeSinceGuiUpdate > s_updateRate)
     {
@@ -255,7 +180,7 @@ int main(int argc, char* args[])
     imGuiHelper.initialize(display.window());
     input.initialize(display.window());
 
-    unsigned int vao = loadMesh();
+    Mesh mesh = Primatives::GenerateCube();
 
     TransformComponent cameraTransform{};
     Camera camera{ &cameraTransform, &display };
@@ -277,13 +202,13 @@ int main(int argc, char* args[])
         time.update();
 
         processInput();
-        
+
         s_targetVelocity = cameraTransform.right() * s_inputDirection.x + cameraTransform.forward() * s_inputDirection.y + cameraTransform.up() * s_inputDirection.z;
         s_targetVelocity *= s_cameraSpeed;
         s_velocity = math::lerp(s_velocity, s_targetVelocity, s_cameraAcceleration * time.deltaTime());
 
         if (!input.cursorVisible())
-            cameraTransform.rotation = quat{ {-radians(s_cameraPitch), -radians(s_cameraYaw), 0}};
+            cameraTransform.rotation = quat{ {-radians(s_cameraPitch), -radians(s_cameraYaw), 0} };
 
         cameraTransform.position += s_velocity * time.deltaTime();
 
@@ -299,11 +224,11 @@ int main(int argc, char* args[])
         mat4 projection = camera.projectionMatrix();
         mat4 vp = projection * view;
 
-        debug::drawRay(s_transform.position, s_transform.forward(), vp, {1, 0, 0});
-        debug::drawRay(s_transform.position, s_transform.up(), vp, {0, 1, 0});
-        debug::drawRay(s_transform.position, s_transform.right(), vp, {0, 0, 1});
+        debug::drawRay(vec3{}, cameraTransform.forward(), vp, { 1, 0, 0 });
+        debug::drawRay(vec3{}, cameraTransform.up(), vp, { 0, 1, 0 });
+        debug::drawRay(vec3{}, cameraTransform.right(), vp, { 0, 0, 1 });
 
-        renderCubes(vao, vp, shader, texture);
+        renderCubes(mesh, vp, shader, texture);
 
         imGuiHelper.render();
         display.swapBuffers();

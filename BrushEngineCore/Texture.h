@@ -20,7 +20,7 @@ public:
     Texture(TextureSettings settings);
     ~Texture();
 
-    void applyTo(int textureUnit);
+    void bindTo(int textureUnit);
 
 private:
     unsigned int m_handle;

@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
     <ClCompile Include="Display.cpp" />
@@ -145,6 +146,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Display.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Primatives.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="ImGuiHelper.h" />
     <ClInclude Include="Input.h" />
