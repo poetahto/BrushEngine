@@ -1,4 +1,4 @@
 /.vs
 /.git
 /bin
-*/imgui.ini
+imgui.ini
