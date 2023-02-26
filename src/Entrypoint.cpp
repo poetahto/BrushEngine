@@ -1,8 +1,10 @@
-// todo: move camera logic to class / cleanup
-// todo: renderer / mesh abstraction and cleanup
-// todo: quaternion rotation port?
-// todo: packaging and resource finding better (so we can actually run the built executable outside of vs)
+// todo:  renderer 
+// todo: make boxes use transform, move camera logic to class / cleanup in general objectify game entities
+// todo: configuration and better asset finding
 // todo: cmake building + true cross platform tests
+// todo: better dependency management than vcpkg
+// todo: scene saving + loading, aka serialization
+// todo: actual model importing, assimp
 
 #include <imgui.h>
 

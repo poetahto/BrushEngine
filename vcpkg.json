@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    "opengl",
+    "glfw3",
+    "glm",
+    "glew",
+    "sdl2",
+    {
+        "name": "imgui",
+        "features": ["opengl3-binding", "glfw-binding", "sdl2-binding"]
+    }
+  ]
+}
