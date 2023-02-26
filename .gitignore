@@ -1,5 +1,11 @@
 /.vs
 /.git
-/bin
-imgui.ini
+
+# Dependencies (might differ per-system)
 /libs
+
+# Compiled binaries (might be big)
+/bin
+
+# ImGUI User data
+imgui.ini
