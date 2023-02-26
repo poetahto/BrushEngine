@@ -96,7 +96,7 @@ void Input::update()
 
 void Input::handleMouseUpdate(double x, double y)
 {
-    debug::log(1, "Mouse update: %f %f", x, y);
+    Debug::log(1, "Mouse update: %f %f", x, y);
 
     s_mousePosition = vec2{ x, y };
 }
@@ -105,7 +105,7 @@ void Input::handleKeyPress(int key, int scancode, int action, int mods)
 {
     if (action != GLFW_REPEAT)
     {
-        debug::log(1, "Key event: %i", key);
+        Debug::log(1, "Key event: %i", key);
 
         s_inputMap.try_emplace(key, InputState{});
 

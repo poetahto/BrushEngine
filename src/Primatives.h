@@ -4,7 +4,7 @@
 
 namespace Primatives
 {
-    Mesh GenerateCube()
+    Mesh generateCube()
     {
         float vertices[] = {
             -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,

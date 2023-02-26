@@ -4,7 +4,7 @@
 #include "Math.h"
 #include "Color.h"
 
-namespace debug
+namespace Debug
 {
     void log(const char* format, ...);
     void log(int verbosity, const char* format, ...);

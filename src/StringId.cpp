@@ -2,7 +2,7 @@
 #include "Math.h"
 
 StringId::StringId(const char* string) : 
-	m_id     { math::hashing::hashCrc32(string, strlen(string)) },
+	m_id     { Math::Hashing::hashCrc32(string, strlen(string)) },
 	m_string { _strdup(string) }
 {
 }

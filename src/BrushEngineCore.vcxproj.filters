@@ -35,12 +35,6 @@
     <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Standard.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Standard.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Shaders\Debug.vert" />
     <None Include="Shaders\Debug.frag" />
   </ItemGroup>

@@ -70,10 +70,10 @@ unsigned int Shader::createShader(const char *path, GLenum type)
         std::vector<GLchar> errorLog(maxLength);
         glGetShaderInfoLog(shader, maxLength, &maxLength, &errorLog[0]);
 
-        debug::log("Failure to compile shader %s: %s", path, errorLog.begin());
+        Debug::log("Failure to compile shader %s: %s", path, errorLog.begin());
     }
 
-    else debug::log("Successfully compiled shader %s.", path);
+    else Debug::log("Successfully compiled shader %s.", path);
 
     return shader;
 }

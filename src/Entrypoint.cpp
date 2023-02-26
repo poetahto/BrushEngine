@@ -160,7 +160,7 @@ void processInput()
         vec2 mouseDelta = input.mouseDelta() * s_mouseSensitivity;
         s_cameraYaw += mouseDelta.x;
         s_cameraPitch -= mouseDelta.y;
-        s_cameraPitch = math::clamp(s_cameraPitch, -89, 89);
+        s_cameraPitch = Math::clamp(s_cameraPitch, -89, 89);
     }
 
     float inputX, inputY, inputZ;
@@ -180,20 +180,20 @@ int main(int argc, char* args[])
     imGuiHelper.initialize(display.window());
     input.initialize(display.window());
 
-    Mesh mesh = Primatives::GenerateCube();
+    Mesh mesh = Primatives::generateCube();
 
     TransformComponent cameraTransform{};
     Camera camera{ &cameraTransform, &display };
 
     // Setup game loop data
 
-    Shader shader{ "Standard.vert", "Standard.frag" };
-    Texture texture{ { "container.jpg" } };
+    Shader shader{ "./assets/Standard.vert", "./assets/Standard.frag" };
+    Texture texture{ { "./assets/container.jpg" } };
 
     input.setCursorVisible(false);
     input.setRawInput(true);
     cameraTransform.position = { 5, 5, 5 };
-    cameraTransform.rotation = quatLookAt(normalize(constants::vec3::Zero - cameraTransform.position), constants::vec3::Up);
+    cameraTransform.rotation = quatLookAt(normalize(Constants::zero - cameraTransform.position), Constants::up);
     s_cameraPitch = eulerAngles(cameraTransform.rotation).y;
     s_cameraYaw = eulerAngles(cameraTransform.rotation).x;
     while (!display.shouldClose())
@@ -205,7 +205,7 @@ int main(int argc, char* args[])
 
         s_targetVelocity = cameraTransform.right() * s_inputDirection.x + cameraTransform.forward() * s_inputDirection.y + cameraTransform.up() * s_inputDirection.z;
         s_targetVelocity *= s_cameraSpeed;
-        s_velocity = math::lerp(s_velocity, s_targetVelocity, s_cameraAcceleration * time.deltaTime());
+        s_velocity = Math::lerp(s_velocity, s_targetVelocity, s_cameraAcceleration * time.deltaTime());
 
         if (!input.cursorVisible())
             cameraTransform.rotation = quat{ {-radians(s_cameraPitch), -radians(s_cameraYaw), 0} };
@@ -224,9 +224,9 @@ int main(int argc, char* args[])
         mat4 projection = camera.projectionMatrix();
         mat4 vp = projection * view;
 
-        debug::drawRay(vec3{}, cameraTransform.forward(), vp, { 1, 0, 0 });
-        debug::drawRay(vec3{}, cameraTransform.up(), vp, { 0, 1, 0 });
-        debug::drawRay(vec3{}, cameraTransform.right(), vp, { 0, 0, 1 });
+        Debug::drawRay(vec3{}, Constants::forward, vp, { 1, 0, 0 });
+        Debug::drawRay(vec3{}, Constants::up, vp, { 0, 1, 0 });
+        Debug::drawRay(vec3{}, Constants::right, vp, { 0, 0, 1 });
 
         renderCubes(mesh, vp, shader, texture);
 

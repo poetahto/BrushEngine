@@ -11,7 +11,7 @@
 
 static void handleError(int error, const char* description)
 {
-    debug::log("GLFW error %i: %s", error, description);
+    Debug::log("GLFW error %i: %s", error, description);
 }
 
 static void handleWindowResize(GLFWwindow* window, int width, int height)
@@ -48,7 +48,7 @@ MessageCallback(GLenum source,
     const GLchar* message,
     const void* userParam)
 {
-    debug::log("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+    Debug::log("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
         (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
         type, severity, message);
 }
@@ -61,7 +61,7 @@ void Display::initialize(const char *title, int width, int height, int refreshRa
     {
         const char* description{};
         glfwGetError(&description);
-        debug::log("Error initializing display: %s", description);
+        Debug::log("Error initializing display: %s", description);
         assert(false);
     }
 
@@ -87,7 +87,7 @@ void Display::initialize(const char *title, int width, int height, int refreshRa
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(MessageCallback, 0);
 
-    debug::log("Successfully initialized display.");
+    Debug::log("Successfully initialized display.");
 }
 
 void Display::shutdown()

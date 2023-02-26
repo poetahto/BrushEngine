@@ -22,13 +22,13 @@ Texture::Texture(TextureSettings settings)
 
     if (data)
     {
-        debug::log("Successfully loaded texture\n");
+        Debug::log("Successfully loaded texture\n");
         glTexImage2D(GL_TEXTURE_2D, 0, settings.colorFormat, width, height, 0, settings.colorFormat, settings.colorFormatDataType, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {
-        debug::log("Failed to load texture\n");
+        Debug::log("Failed to load texture\n");
     }
 
     // Clean up data, now that OpenGL is tracking it.

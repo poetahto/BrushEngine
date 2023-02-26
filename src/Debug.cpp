@@ -3,7 +3,7 @@
 #include "Debug.h"
 #include "Shader.h"
 
-void debug::log(const char* format, ...)
+void Debug::log(const char* format, ...)
 {
     va_list argList;
     va_start(argList, format);
@@ -11,7 +11,7 @@ void debug::log(const char* format, ...)
     va_end(argList);
 }
 
-void debug::log(int verbosity, const char* format, ...)
+void Debug::log(int verbosity, const char* format, ...)
 {
     va_list argList;
     va_start(argList, format);
@@ -19,14 +19,14 @@ void debug::log(int verbosity, const char* format, ...)
     va_end(argList);
 }
 
-void debug::logV(const char* format, va_list args)
+void Debug::logV(const char* format, va_list args)
 {
     logV(0, format, args);
 }
 
-void debug::logV(int verbosity, const char* format, va_list args)
+void Debug::logV(int verbosity, const char* format, va_list args)
 {
-    if (debug::Verbosity >= verbosity)
+    if (Debug::Verbosity >= verbosity)
     {
         const int MAX_CHARS = 1024;
         static char buffer[MAX_CHARS];
@@ -40,11 +40,11 @@ void debug::logV(int verbosity, const char* format, va_list args)
 static unsigned int s_vao;
 static Shader* s_debugShader;
 
-void debug::drawLine(glm::vec3 start, glm::vec3 end, glm::mat4 vp, Color color)
+void Debug::drawLine(glm::vec3 start, glm::vec3 end, glm::mat4 vp, Color color)
 {
     if (s_debugShader == nullptr)
     {
-        s_debugShader = new Shader{ "Shaders/Debug.vert", "Shaders/Debug.frag" };
+        s_debugShader = new Shader{ "./assets/Debug.vert", "./assets/Debug.frag" };
         
         glGenVertexArrays(1, &s_vao);
         glBindVertexArray(s_vao);
@@ -76,7 +76,7 @@ void debug::drawLine(glm::vec3 start, glm::vec3 end, glm::mat4 vp, Color color)
     glDrawArrays(GL_LINES, 0, 2);
 }
 
-void debug::drawRay(glm::vec3 start, glm::vec3 direction, glm::mat4 vp, Color color)
+void Debug::drawRay(glm::vec3 start, glm::vec3 direction, glm::mat4 vp, Color color)
 {
     drawLine(start, start + direction, vp, color);
 }

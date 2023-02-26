@@ -40,9 +40,9 @@ Color ColorHsl(float h, float s, float l, float a)
 
         float p = 2 * l - q;
 
-        r = hue2rgb(p, q, h + 1.0 / 3.0);
+        r = hue2rgb(p, q, h + 1.0f / 3.0f);
         g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1.0 / 3.0);
+        b = hue2rgb(p, q, h - 1.0f / 3.0f);
     }
 
     return Color{ r, g, b, a };

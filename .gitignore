@@ -1,3 +1,4 @@
-/x64
-/BrushEngineCore/x64
 /.vs
+/.git
+/bin
+*/imgui.ini

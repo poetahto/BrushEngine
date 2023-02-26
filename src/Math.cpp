@@ -2,7 +2,7 @@
 
 using namespace glm;
 
-vec3 math::moveTowards(vec3 current, vec3 target, float maxDelta)
+vec3 Math::moveTowards(vec3 current, vec3 target, float maxDelta)
 {
     vec3 toVector = target - current;
     float lengthSqr = sqrMagnitude(toVector);
@@ -16,7 +16,7 @@ vec3 math::moveTowards(vec3 current, vec3 target, float maxDelta)
     return current + toVector;
 }
 
-float math::clamp(float value, float min, float max)
+float Math::clamp(float value, float min, float max)
 {
     if (value > max)
         return max;
@@ -27,7 +27,7 @@ float math::clamp(float value, float min, float max)
     return value;
 }
 
-float math::wrap(float current, float min, float max)
+float Math::wrap(float current, float min, float max)
 {
     if (min > max)
         return wrap(current, max, min);
@@ -35,27 +35,27 @@ float math::wrap(float current, float min, float max)
     return (current >= 0 ? min : max) + fmodf(current, max - min);
 }
 
-float math::sqrMagnitude(vec3 vector)
+float Math::sqrMagnitude(vec3 vector)
 {
     return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
-float math::lerp(float a, float b, float t)
+float Math::lerp(float a, float b, float t)
 {
     return a * (1.0f - t) + (b * t);
 }
 
-vec3 math::lerp(vec3 a, vec3 b, float t)
+vec3 Math::lerp(vec3 a, vec3 b, float t)
 {
     return vec3(
-        math::lerp(a.x, b.x, t),
-        math::lerp(a.y, b.y, t),
-        math::lerp(a.z, b.z, t)
+        Math::lerp(a.x, b.x, t),
+        Math::lerp(a.y, b.y, t),
+        Math::lerp(a.z, b.z, t)
     );
 }
 
 // Algorithm taken from here: https://lxp32.github.io/docs/a-simple-example-crc32-calculation/
-const int math::hashing::hashCrc32(const char* string, size_t length)
+const int Math::Hashing::hashCrc32(const char* string, size_t length)
 {
     int crc = 0xFFFFFFFF;
 
