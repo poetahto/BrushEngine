@@ -7,6 +7,7 @@
 // todo: actual model importing, assimp
 
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 #include "StringId.h"
 #include "Math.h"
@@ -44,38 +45,163 @@ static bool s_showDemoWindow{ false };
 static bool s_quit{ false };
 static bool s_wireframeOn{ false };
 static bool s_cursorDisabled{ false };
-static vec3 s_cubePositions[] {
-        vec3(0.0f,  0.0f,  0.0f),
-        vec3(2.0f,  5.0f, -15.0f),
-        vec3(-1.5f, -2.2f, -2.5f),
-        vec3(-3.8f, -2.0f, -12.3f),
-        vec3(2.4f, -0.4f, -3.5f),
-        vec3(-1.7f,  3.0f, -7.5f),
-        vec3(1.3f, -2.0f, -2.5f),
-        vec3(1.5f,  2.0f, -2.5f),
-        vec3(1.5f,  0.2f, -1.5f),
-        vec3(-1.3f,  1.0f, -1.5f)
+static mat4 s_cubePositions[] {
+        glm::translate(glm::identity<mat4>(), vec3(0.0f,  0.0f,  0.0f)),
+        glm::translate(glm::identity<mat4>(), vec3(2.0f,  5.0f, -15.0f)),
+        glm::translate(glm::identity<mat4>(), vec3(-1.5f, -2.2f, -2.5f)),
+        glm::translate(glm::identity<mat4>(), vec3(-3.8f, -2.0f, -12.3f)),
+        glm::translate(glm::identity<mat4>(), vec3(2.4f, -0.4f, -3.5f)),
+        glm::translate(glm::identity<mat4>(), vec3(-1.7f,  3.0f, -7.5f)),
+        glm::translate(glm::identity<mat4>(), vec3(1.3f, -2.0f, -2.5f)),
+        glm::translate(glm::identity<mat4>(), vec3(1.5f,  2.0f, -2.5f)),
+        glm::translate(glm::identity<mat4>(), vec3(1.5f,  0.2f, -1.5f)),
+        glm::translate(glm::identity<mat4>(), vec3(-1.3f,  1.0f, -1.5f))
 };
 static vec3 s_inputDirection{};
 static vec3 s_velocity{};
 static vec3 s_targetVelocity{};
 
-void renderCubes(Mesh &mesh, mat4 &vp, Shader &shader, Texture &texture)
+void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition)
 {
-    mat4 model;
+    static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
+    static bool useSnap = false;
+    static float snap[3] = { 1.f, 1.f, 1.f };
+    static float bounds[] = { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
+    static float boundsSnap[] = { 0.1f, 0.1f, 0.1f };
+    static bool boundSizing = false;
+    static bool boundSizingSnap = false;
 
-    for (unsigned int i = 0; i < 10; i++)
+    float identityMatrix[16] = { 0.0 };
+
     {
-        float angle = 20.0f * i;
-        model = mat4(1.0f);
-        model = translate(model, s_cubePositions[i]);
-        model = rotate(model, (float)glfwGetTime() * radians(s_boxSpinSpeed), vec3(0.5f, 1.0f, 0.0f));
+        const float *pSource = (const float*)glm::value_ptr(glm::identity<mat4>());
+        for (int i = 0; i < 16; ++i)
+            identityMatrix[i] = pSource[i];
+    }
+
+    if (editTransformDecomposition)
+    {
+        if (ImGui::IsKeyPressed(ImGuiKey_T))
+            mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+        if (ImGui::IsKeyPressed(ImGuiKey_E))
+            mCurrentGizmoOperation = ImGuizmo::ROTATE;
+        if (ImGui::IsKeyPressed(ImGuiKey_R)) // r Key
+            mCurrentGizmoOperation = ImGuizmo::SCALE;
+        if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+            mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+            mCurrentGizmoOperation = ImGuizmo::ROTATE;
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+            mCurrentGizmoOperation = ImGuizmo::SCALE;
+        float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+        ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
+        ImGui::InputFloat3("Tr", matrixTranslation);
+        ImGui::InputFloat3("Rt", matrixRotation);
+        ImGui::InputFloat3("Sc", matrixScale);
+        ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
+
+        if (mCurrentGizmoOperation != ImGuizmo::SCALE)
+        {
+            if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
+                mCurrentGizmoMode = ImGuizmo::LOCAL;
+            ImGui::SameLine();
+            if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
+                mCurrentGizmoMode = ImGuizmo::WORLD;
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_S))
+            useSnap = !useSnap;
+        ImGui::Checkbox("##UseSnap", &useSnap);
+        ImGui::SameLine();
+
+        switch (mCurrentGizmoOperation)
+        {
+        case ImGuizmo::TRANSLATE:
+            ImGui::InputFloat3("Snap", &snap[0]);
+            break;
+        case ImGuizmo::ROTATE:
+            ImGui::InputFloat("Angle Snap", &snap[0]);
+            break;
+        case ImGuizmo::SCALE:
+            ImGui::InputFloat("Scale Snap", &snap[0]);
+            break;
+        }
+        ImGui::Checkbox("Bound Sizing", &boundSizing);
+        if (boundSizing)
+        {
+            ImGui::PushID(3);
+            ImGui::Checkbox("##BoundSizing", &boundSizingSnap);
+            ImGui::SameLine();
+            ImGui::InputFloat3("Snap", boundsSnap);
+            ImGui::PopID();
+        }
+    }
+
+    ImGuiIO& io = ImGui::GetIO();
+    float viewManipulateRight = io.DisplaySize.x;
+    float viewManipulateTop = 0;
+    static ImGuiWindowFlags gizmoWindowFlags = 0;
+    
+    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+    //ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
+    //ImGuizmo::DrawCubes(cameraView, cameraProjection, matrix, 1);
+    ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, boundSizing ? bounds : NULL, boundSizingSnap ? boundsSnap : NULL);
+
+    //ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(viewManipulateRight - 128, viewManipulateTop), ImVec2(128, 128), 0x10101010);
+}
+
+void renderCubes(Mesh &mesh, mat4 view, mat4 projection, Shader &shader, Texture &texture)
+{
+    bool dirty = false;
+    ImGuiIO &io = ImGui::GetIO();
+    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        float viewArr[16] = { 0.0 };
+        float projArr[16] = { 0.0 };
+
+        {
+            const float *pSource = (const float*)glm::value_ptr(view);
+            for (int i = 0; i < 16; ++i)
+                viewArr[i] = pSource[i];
+        }
+
+        {
+            const float *pSource = (const float*)glm::value_ptr(projection);
+            for (int i = 0; i < 16; ++i)
+                projArr[i] = pSource[i];
+        }
+
+        float angle = s_boxSpinSpeed * time.deltaTime();
+        mat4 model = s_cubePositions[i];
+        model = rotate(model, radians(angle), vec3(0.5f, 1.0f, 0.0f));
         model = rotate(model, radians(angle), vec3(1.0f, 0.3f, 0.5f));
+        
+        float gizmoArr[16] = { 0.0 };
+
+        {
+            const float *pSource = (const float*)glm::value_ptr(model);
+            for (int i = 0; i < 16; ++i)
+                gizmoArr[i] = pSource[i];
+        }
+
+        ImGuizmo::SetID(i);
+        //ImGuizmo::Manipulate(viewArr, projArr, ImGuizmo::TRANSLATE, ImGuizmo::WORLD, gizmoArr, 0, 0);
+        EditTransform(viewArr, projArr, gizmoArr, true);
+        model = glm::make_mat4(gizmoArr);
+
+        mat4 mvp = projection * view * model;
 
         shader.use();
-        shader.setMat4("transform", vp * model);
+        shader.setMat4("transform", mvp);
         texture.bindTo(GL_TEXTURE0);
         mesh.draw();
+
+        s_cubePositions[i] = model;
     }
 }
 
@@ -230,7 +356,7 @@ int main(int argc, char* args[])
         Debug::drawRay(vec3{}, Constants::up, vp, { 0, 1, 0 });
         Debug::drawRay(vec3{}, Constants::right, vp, { 0, 0, 1 });
 
-        renderCubes(mesh, vp, shader, texture);
+        renderCubes(mesh, view, projection, shader, texture);
 
         imGuiHelper.render();
         display.swapBuffers();

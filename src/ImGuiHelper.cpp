@@ -1,6 +1,9 @@
-#include "ImGuiHelper.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <imgui_impl_sdl.h>
+#include <ImGuizmo.h>
+
+#include "ImGuiHelper.h"
 
 void ImGuiHelper::initialize(GLFWwindow *window)
 {
@@ -21,9 +24,13 @@ void ImGuiHelper::shutdown()
 
 void ImGuiHelper::preUpdate()
 {
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
+
     ImGui::NewFrame();
+
+    ImGuizmo::BeginFrame();
 }
 
 void ImGuiHelper::render()

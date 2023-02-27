@@ -5,10 +5,10 @@
     "glfw3",
     "glm",
     "glew",
-    "sdl2",
     {
         "name": "imgui",
-        "features": ["opengl3-binding", "glfw-binding", "sdl2-binding"]
-    }
+        "features": ["opengl3-binding", "glfw-binding"]
+    },
+    "imguizmo"
   ]
 }
